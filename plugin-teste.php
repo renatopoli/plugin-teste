@@ -1,8 +1,8 @@
 <?php
 /*
-Plugin Name: Alpina Checklist Plugin
-Description: Plugin para criar e gerenciar checklists de desenvolvimento de sites. Nessa versão ele salva os checkboxes marcados em um arquivo JSON.
-Version: 3.0.2
+Plugin Name: Plugin teste
+Description: lorem
+Version: 3.0.3
 Author: Alpina Digital
 GitHub Plugin URI: renatopoli/plugin-teste
 Primary Branch: main
