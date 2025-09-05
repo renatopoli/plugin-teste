@@ -1,140 +1,181 @@
 <?php
-/**
- * Plugin Name: Plugin Teste
- * Plugin URI: https://example.com
- * Description: Um plugin de teste simples para WordPress com página de configurações, shortcode e endpoint REST.
- * Version: 1.0.0
- * Author: Seu Nome
- * Author URI: https://example.com
- * License: GPLv2 or later
- * Text Domain: plugin-teste
- * Domain Path: /languages
- */
+/*
+Plugin Name: Alpina Checklist Plugin
+Description: Plugin para criar e gerenciar checklists de desenvolvimento de sites. Nessa versão ele salva os checkboxes marcados em um arquivo JSON.
+Version: 3.0
+Author: Alpina Digital
+*/
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Bloqueia acesso direto.
+if (!defined('ABSPATH')) {
+    exit; // Exit if accessed directly
 }
 
-final class Plugin_Teste {
-	const OPTION_KEY = 'plugin_teste_mensagem';
 
-	public function __construct() {
-		add_action( 'plugins_loaded', [ $this, 'load_textdomain' ] );
-		add_action( 'admin_menu', [ $this, 'register_settings_page' ] );
-		add_action( 'admin_init', [ $this, 'register_settings' ] );
-		add_action( 'admin_notices', [ $this, 'admin_notice' ] );
-		add_shortcode( 'plugin_teste', [ $this, 'shortcode_output' ] );
-		add_action( 'rest_api_init', [ $this, 'register_rest_routes' ] );
-	}
+class Alpina_Checklist_Plugin
+{
+    private $checklist_data;
+    private $checked_items;
+    private $checked_file;
 
-	/** Carrega traduções */
-	public function load_textdomain() : void {
-		load_plugin_textdomain( 'plugin-teste', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
-	}
+    public function __construct()
+    {
+        $this->checked_file = plugin_dir_path(__FILE__) . 'checked-items.json';
+        add_action('init', array($this, 'load_checklist_data'));
+        add_action('admin_menu', array($this, 'add_checklist_menu'));
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
+        add_action('wp_ajax_alpina_checklist_toggle', array($this, 'ajax_toggle_checkbox'));
+    }
 
-	/** Hooks de ativação/desativação */
-	public static function activate() : void {
-		if ( false === get_option( self::OPTION_KEY ) ) {
-			add_option( self::OPTION_KEY, 'Olá do Plugin Teste!' );
-		}
-	}
+    /**
+     * Inicia os scripts e estilos necessários para a página de administração, se estiver na página correta.
+     */
+    public function enqueue_admin_scripts()
+    {
+        if (is_admin() && isset($_GET['page']) && $_GET['page'] === 'revisar_checklists') {
+            wp_enqueue_script('jquery-ui-tabs');
+            wp_enqueue_style('jquery-ui', '//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css');
+        }
+    }
 
-	public static function deactivate() : void {
-		// Mantém dados por padrão. Remova a linha abaixo para excluir na desinstalação.
-	}
+    /**
+     * Inicializa os dados do checklist a partir do arquivo JSON.
+     */
+    public function load_checklist_data()
+    {
+        $json_file = plugin_dir_path(__FILE__) . 'checklist-data.json';
+        if (file_exists($json_file)) {
+            $json_content = file_get_contents($json_file);
+            $this->checklist_data = json_decode($json_content, true);
+        } else {
+            $this->checklist_data = array();
+        }
+        // Carrega os itens marcados do arquivo físico
+        if (file_exists($this->checked_file)) {
+            $checked_content = file_get_contents($this->checked_file);
+            $this->checked_items = json_decode($checked_content, true);
+        } else {
+            $this->checked_items = array();
+        }
+    }
 
-	/** Página e registro de configurações */
-	public function register_settings_page() : void {
-		add_options_page(
-			__( 'Plugin Teste', 'plugin-teste' ),
-			__( 'Plugin Teste', 'plugin-teste' ),
-			'manage_options',
-			'plugin-teste',
-			[ $this, 'render_settings_page' ]
-		);
-	}
+    /**
+     * AJAX handler para marcar/desmarcar checkbox em tempo real
+     */
+    public function ajax_toggle_checkbox()
+    {
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Sem permissão.');
+        }
+        $key = isset($_POST['key']) ? sanitize_title($_POST['key']) : '';
+        $checked = isset($_POST['checked']) && $_POST['checked'] == 'true';
+        if (!$key) {
+            wp_send_json_error('Chave inválida.');
+        }
+        // Carrega o estado atual
+        $items = array();
+        if (file_exists($this->checked_file)) {
+            $items = json_decode(file_get_contents($this->checked_file), true);
+            if (!is_array($items)) $items = array();
+        }
+        $items[$key] = $checked;
+        file_put_contents($this->checked_file, json_encode($items));
+        wp_send_json_success();
+    }
 
-	public function register_settings() : void {
-		register_setting( 'plugin_teste_group', self::OPTION_KEY, [
-			'type'              => 'string',
-			'sanitize_callback' => 'sanitize_text_field',
-			'default'           => 'Olá do Plugin Teste!',
-		] );
+    /**
+     * Cria o menu de administração para o plugin.
+     */
+    public function add_checklist_menu()
+    {
+        add_menu_page(
+            'Revisar Checklists',
+            'Checklists',
+            'manage_options',
+            'revisar_checklists',
+            array($this, 'checklist_review_page'),
+            'dashicons-yes',
+            99
+        );
+    }
 
-		add_settings_section(
-			'plugin_teste_section',
-			__( 'Configurações Básicas', 'plugin-teste' ),
-			function () {
-				echo '<p>' . esc_html__( 'Defina a mensagem que será exibida pelo shortcode e pela API.', 'plugin-teste' ) . '</p>';
-			},
-			'plugin-teste'
-		);
+    /**
+     * Renderiza a página de revisão dos checklists.
+     */
+    public function checklist_review_page()
+    {
 
-		add_settings_field(
-			'plugin_teste_mensagem_field',
-			__( 'Mensagem', 'plugin-teste' ),
-			function () {
-				$value = get_option( self::OPTION_KEY, '' );
-				echo '<input type="text" class="regular-text" name="' . esc_attr( self::OPTION_KEY ) . '" value="' . esc_attr( $value ) . '" />';
-			},
-			'plugin-teste',
-			'plugin_teste_section'
-		);
-	}
+        // Protege o acesso: apenas o usuário 'alpina' pode acessar
+        $current_user = wp_get_current_user();
+        if ($current_user->user_login !== 'alpina') {
+            echo '<div class="wrap"><h1>Revisar Checklists</h1><p style="color:red;">Acesso restrito.</p></div>';
+            return;
+        }
 
-	public function render_settings_page() : void {
-		if ( ! current_user_can( 'manage_options' ) ) {
-			return;
-		}
-		?>
-		<div class="wrap">
-			<h1><?php echo esc_html__( 'Plugin Teste', 'plugin-teste' ); ?></h1>
-			<form action="options.php" method="post">
-				<?php settings_fields( 'plugin_teste_group' ); ?>
-				<?php do_settings_sections( 'plugin-teste' ); ?>
-				<?php submit_button( __( 'Salvar alterações', 'plugin-teste' ) ); ?>
-			</form>
-			<p><?php echo esc_html__( 'Use o shortcode [plugin_teste nome="Maria"].', 'plugin-teste' ); ?></p>
-			<p><?php echo esc_html__( 'Endpoint REST: /wp-json/plugin-teste/v1/mensagem', 'plugin-teste' ); ?></p>
-		</div>
-		<?php
-	}
+        if (empty($this->checklist_data)) {
+            echo '<div class="wrap"><h1>Revisar Checklists</h1><p>Nenhum dado encontrado no JSON.</p></div>';
+            return;
+        }
 
-	/** Aviso rápido no admin */
-	public function admin_notice() : void {
-		if ( ! current_user_can( 'manage_options' ) ) {
-			return;
-		}
-		if ( get_current_screen() && 'settings_page_plugin-teste' === get_current_screen()->id ) {
-			return; // evita mostrar na página do próprio plugin.
-		}
-		echo '<div class="notice notice-info is-dismissible"><p>' . esc_html__( 'Plugin Teste ativo. Vá em Configurações → Plugin Teste.', 'plugin-teste' ) . '</p></div>';
-	}
+        $active_tab = isset($_GET['tab']) ? intval($_GET['tab']) : 0;
 
-	/** Shortcode [plugin_teste nome="Mundo"] */
-	public function shortcode_output( $atts = [] ) : string {
-		$atts = shortcode_atts( [ 'nome' => 'Mundo' ], $atts, 'plugin_teste' );
-		$mensagem = get_option( self::OPTION_KEY, '' );
-		return '<div class="plugin-teste">' . esc_html( sprintf( '%s %s!', $mensagem, $atts['nome'] ) ) . '</div>';
-	}
+        echo '<div class="wrap"><h1>Revisar Checklists</h1>';
+        echo '<input type="hidden" name="active_tab" id="active_tab" value="' . esc_attr($active_tab) . '">';
+        echo '<div id="tabs">';
+        echo '<ul>';
 
-	/** Rota REST simples: GET /wp-json/plugin-teste/v1/mensagem */
-	public function register_rest_routes() : void {
-		register_rest_route( 'plugin-teste/v1', '/mensagem', [
-			'methods'             => 'GET',
-			'permission_callback' => '__return_true',
-			'callback'            => function () {
-				return rest_ensure_response( [
-					'mensagem' => get_option( self::OPTION_KEY, '' ),
-				] );
-			},
-		] );
-	}
+        foreach ($this->checklist_data as $index => $category) {
+            echo '<li><a href="#tab-' . $index . '">' . esc_html($category['category']) . '</a></li>';
+        }
+
+        echo '</ul>';
+
+        foreach ($this->checklist_data as $index => $category) {
+            echo '<div id="tab-' . $index . '">';
+            if (!empty($category['items'])) {
+                $i = 1;
+                foreach ($category['items'] as $item) {
+                    $key = sanitize_title($item['title']);
+                    $checked = (isset($this->checked_items[$key]) && $this->checked_items[$key]) ? 'checked' : '';
+                    $na_key = $key . '_na';
+                    $na_checked = (isset($this->checked_items[$na_key]) && $this->checked_items[$na_key]) ? 'checked' : '';
+                    echo '<p><strong>' . $i++ . ') ' . esc_html($item['title']) . '</strong>';
+                    echo '<br><br><label><input type="checkbox" class="alpina-checklist-checkbox" data-key="' . esc_attr($key) . '" ' . $checked . '> Checado</label>';
+                    echo '<br><label style="color:#666;"><input type="checkbox" class="alpina-checklist-checkbox-na" data-key="' . esc_attr($na_key) . '" ' . $na_checked . '> Não aplicável a esse projeto</label>';
+                    echo !empty($item['description']) ? '<br><br>Obs: ' . esc_attr($item['description']) : '';
+                    echo '<hr>';
+                    echo '</p>';
+                }
+            } else {
+                echo '<p>Nenhum item encontrado nesta categoria.</p>';
+            }
+            echo '</div>';
+        }
+
+        echo '</div>';
+        echo '</div>';
+
+        // Script para tabs e AJAX
+        echo '<script>
+            jQuery(document).ready(function($) {
+                var activeTab = ' . $active_tab . ';
+                $("#tabs").tabs({
+                    active: activeTab,
+                    activate: function(event, ui) {
+                        $("#active_tab").val(ui.newTab.index());
+                    }
+                });
+                $(".alpina-checklist-checkbox, .alpina-checklist-checkbox-na").on("change", function() {
+                    var key = $(this).data("key");
+                    var checked = $(this).is(":checked");
+                    $.post(ajaxurl, {
+                        action: "alpina_checklist_toggle",
+                        key: key,
+                        checked: checked
+                    });
+                });
+            });
+        </script>';
+    }
 }
 
-// Instancia o plugin
-$__plugin_teste_instance = new Plugin_Teste();
-
-// Registra hooks de ativação/desativação
-register_activation_hook( __FILE__, [ 'Plugin_Teste', 'activate' ] );
-register_deactivation_hook( __FILE__, [ 'Plugin_Teste', 'deactivate' ] );
+new Alpina_Checklist_Plugin();

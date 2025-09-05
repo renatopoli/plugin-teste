@@ -1,0 +1,176 @@
+[
+  {
+    "category": "Finalizar Desenvolvimento",
+    "items": [
+      {
+        "title": "Revisar responsivo: telefones linkados, galerias arrastando no touch, modal vira accordion, etc.",
+        "description": ""
+      },
+      {
+        "title": "Minificar css e js",
+        "description": ""
+      },
+      {
+        "title": "Instalar e configurar \"Easy SMTP\"",
+        "description": ""
+      },
+      {
+        "title": "Verificar campos do contact form *ATENÇÃO EFETUAR TESTES",
+        "description": ""
+      },
+      {
+        "title": "Configurar todos formulários com o e-mail do cliente, testar envio",
+        "description": ""
+      },
+      {
+        "title": "Incluir reCaptcha em todos formulários. “Configurar reCaptcha V3 nas Integrações do CF7”",
+        "description": ""
+      },
+      {
+        "title": "Recaptcha - \"Visibility Hidden\" CSS",
+        "description": ""
+      },
+      {
+        "title": "Personalizar e-mail de envio com logo e cores do cliente (HTML)",
+        "description": ""
+      },
+      {
+        "title": "Instalar plugin \"Contact Form CFDB7\" para salvar mensagens no banco",
+        "description": ""
+      },
+      {
+        "title": "Atualizar wordpress",
+        "description": ""
+      },
+      {
+        "title": "Atualizar plugins",
+        "description": ""
+      },
+      {
+        "title": "Excluir posts e comentários que foram gerados apenas para desenvolvimento. – “Olá Mundo”, “Lorem Ipsums”, Posts do WP que vem na instalação",
+        "description": ""
+      },
+      {
+        "title": "Conferir ou Adicionar assinatura da Alpina rodapé do site",
+        "description": ""
+      },
+      {
+        "title": "Instalar plugin \"WPS Hide Login\" para alterar url de login de \"wp-admin\" para \"alpina\"",
+        "description": ""
+      },
+      {
+        "title": "Instalar plugin \"Redirection\" para gerenciar todos os redirecionamentos 301 caso site seja uma nova versão de um outro da mesma url",
+        "description": ""
+      },
+      {
+        "title": "Criar usuário ALPINA no painel Admin",
+        "description": "Usuario alpina tem que estar completo:\nNome de Usuário: alpina\nNome e Sobrenome: Alpina Digital\nSenha: Metas@lp2023\nE-mail: suporte@alpina.digital\nSite: alpina.digital"
+      },
+      {
+        "title": "Remover plugin de Backup",
+        "description": ""
+      },
+      {
+        "title": "Verificar Favicon",
+        "description": ""
+      },
+      {
+        "title": "Remover Plugin All In One",
+        "description": ""
+      },
+      {
+        "title": "Excluir arquivos de backups gerados pelo All in One",
+        "description": ""
+      },
+      {
+        "title": "Remover comentário padrão do WP",
+        "description": ""
+      },
+      {
+        "title": "Painel (Dashboard) – Desmarcar itens padrões do WP: Agora; Atividade; Rascunho Rápido; Status do Diagnóstico; Atualização do PHP Recomendada Novidades e Eventos do Wordpress; Visão Geral dos Posts Yoast SEO",
+        "description": ""
+      },
+      {
+        "title": "Passar páginas no w3c validator",
+        "description": ""
+      },
+      {
+        "title": "Passar páginas no Google Pagespeed Insights",
+        "description": ""
+      },
+      {
+        "title": "Plugin Lite speed cache",
+        "description": ""
+      },
+      {
+        "title": "Criar pag 404",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "category": "Pós-Online",
+    "items": [
+      {
+        "title": "Instalar e configurar plugins de SEO (YOAST), remover \"Arquivo\" dos titles e Corrigir title da home \"Nome do site + Separator + Slogan\"",
+        "description": ""
+      },
+      {
+        "title": "Passar páginas no w3c validator",
+        "description": ""
+      },
+      {
+        "title": "Passar páginas no Google Pagespeed Insights",
+        "description": ""
+      },
+      {
+        "title": "Verificar se script do Google Analytics está em todas as páginas",
+        "description": ""
+      },
+      {
+        "title": "Otimizar performance e carregamento das páginas levando em conta a meta do Google (6 seg desktop e 3 seg mobile)",
+        "description": ""
+      },
+      {
+        "title": "Desmarcar: \"Evitar que mecanismos de busca indexem este site\"",
+        "description": ""
+      },
+      {
+        "title": "Logar na conta do ASAAS, ir na sessão Webhooks e ativar o \"Webhook para cobranças\" preenchendo os dados que o ASAAS solicita na ativação",
+        "description": ""
+      },
+      {
+        "title": "robots.txt padrão: https://docs.google.com/document/d/1V2ktqeEbY0OcrYLL4lLQXTFIyAar1MXgmVgJ0KamtuU/edit?usp=sharing",
+        "description": ""
+      },
+      {
+        "title": "htaccess padrão: https://docs.google.com/document/d/1z-WbwQEa0vbocbJBkjtq-DwyHkIhKV7OjggBpWrYwjM/edit?usp=sharing",
+        "description": ""
+      },
+      {
+        "title": "Mudar endereço de e-mail do destinatário de moderação de comentários dos posts. Consulte doc https://docs.google.com/document/d/1m8YP9vD5vsfiP8m5v9r_3wzIaXD7ln5tHDwC5jSopUU/edit?tab=t.0",
+        "description": ""
+      },
+      {
+        "title": "Configurar askimet. Instalar o askimet anti spam e colocar a chave de API: bf312b7c1610",
+        "description": ""
+      },
+      {
+        "title": "Configurar wp-admin. Remova o wp-config-sample. O arquivo wp-config.php deve contar as configurações: https://docs.google.com/document/d/1m8YP9vD5vsfiP8m5v9r_3wzIaXD7ln5tHDwC5jSopUU/edit?tab=t.0",
+        "description": ""
+      },
+      {
+        "title": "Revisar os plugins que precisam estar ativados",
+        "description": ""
+      },
+      {
+        "title": "Se esse projeto utilizar Woocommerce, checar sobre o problema do mute na pasta woocommerce",
+        "description": "Ao publicar o site, já tivemos problema de mutar a pasta woocommerce e gerar problemas de acesso nas páginas aonde utiliza o woocommerce. Verificar se todas as páginas estão acessíveis e sem erros."
+      },
+      {
+        "title": "Nos envios de formulários (em geral), checar se está exibindo corretamente o nome do projeto (assunto, remetente,etc)",
+        "description": ""
+      }
+    ]
+  }
+]
