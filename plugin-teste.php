@@ -106,10 +106,10 @@ class Alpina_Checklist_Plugin
 
         // Protege o acesso: apenas o usuário 'alpina' pode acessar
         $current_user = wp_get_current_user();
-        if ($current_user->user_login !== 'alpina') {
-            echo '<div class="wrap"><h1>Revisar Checklists</h1><p style="color:red;">Acesso restrito.</p></div>';
-            return;
-        }
+        // if ($current_user->user_login !== 'alpina') {
+        //     echo '<div class="wrap"><h1>Revisar Checklists</h1><p style="color:red;">Acesso restrito.</p></div>';
+        //     return;
+        // }
 
         if (empty($this->checklist_data)) {
             echo '<div class="wrap"><h1>Revisar Checklists</h1><p>Nenhum dado encontrado no JSON.</p></div>';
