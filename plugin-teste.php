@@ -1,7 +1,7 @@
 <?php
 /*
-Plugin Name: Plugin teste
-Version: 3.0.5
+Plugin Name: .Plugin teste
+Version: 3.0.8
 GitHub Plugin URI: renatopoli/plugin-teste
 Primary Branch: main
 Update URI: https://github.com/renatopoli/plugin-teste
