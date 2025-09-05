@@ -1,12 +1,11 @@
 <?php
 /*
 Plugin Name: Plugin teste
-Description: lorem
-Version: 3.0.3
-Author: Alpina Digital
+Version: 3.0.5
 GitHub Plugin URI: renatopoli/plugin-teste
 Primary Branch: main
 Update URI: https://github.com/renatopoli/plugin-teste
+
 
 */
 
